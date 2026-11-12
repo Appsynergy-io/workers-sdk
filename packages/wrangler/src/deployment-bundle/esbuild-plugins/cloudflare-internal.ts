@@ -2,6 +2,20 @@ import { dedent } from "../../utils/dedent";
 import type { Plugin } from "esbuild";
 
 /**
+ * The `apsy:` spelling of each built-in module specifier and the `cloudflare:` module it
+ * names. Either spelling resolves to the one module, so an import of either is the one
+ * external `cloudflare:` import in the bundle.
+ */
+const APSY_MODULES: Record<string, string> = {
+	"apsy:workers": "cloudflare:workers",
+	"apsy:sockets": "cloudflare:sockets",
+	"apsy:email": "cloudflare:email",
+	"apsy:workflows": "cloudflare:workflows",
+	"apsy:node": "cloudflare:node",
+	"apsy:test": "cloudflare:test",
+};
+
+/**
  * An esbuild plugin that will mark any `cloudflare:...` imports as external.
  */
 export const cloudflareInternalPlugin: Plugin = {
@@ -9,6 +23,14 @@ export const cloudflareInternalPlugin: Plugin = {
 	setup(pluginBuild) {
 		const paths = new Set();
 		pluginBuild.onStart(() => paths.clear());
+		pluginBuild.onResolve({ filter: /^apsy:.*/ }, (args) => {
+			const path = APSY_MODULES[args.path];
+			if (path === undefined) {
+				return undefined;
+			}
+			paths.add(path);
+			return { path, external: true };
+		});
 		pluginBuild.onResolve({ filter: /^cloudflare:.*/ }, (args) => {
 			paths.add(args.path);
 			return { external: true };
