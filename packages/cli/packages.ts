@@ -157,13 +157,36 @@ function getWorkspaceInstallRootFlag(
 }
 
 /**
+ * `WRANGLER_INSTALL_SPEC` is the package spec installed as the project's `wrangler`, for a
+ * distribution that ships wrangler under its own package (for example
+ * `wrangler@npm:<package>@<version>`).
+ *
+ * Defaults to `wrangler@latest`.
+ */
+export function getWranglerInstallSpec(): string {
+	// eslint-disable-next-line turbo/no-undeclared-env-vars -- read when the CLI runs, not a build input
+	return process.env.WRANGLER_INSTALL_SPEC || "wrangler@latest";
+}
+
+/**
+ * `WRANGLER_EXEC_SPEC` is the package spec a package manager's `dlx`/`npx` runs to invoke
+ * wrangler outside a project, for a distribution that ships wrangler under its own package.
+ *
+ * Defaults to `wrangler@latest`.
+ */
+export function getWranglerExecSpec(): string {
+	// eslint-disable-next-line turbo/no-undeclared-env-vars -- read when the CLI runs, not a build input
+	return process.env.WRANGLER_EXEC_SPEC || "wrangler@latest";
+}
+
+/**
  *  Installs the latest version of wrangler in the project directory if it isn't already.
  */
 export async function installWrangler(
 	packageManager: "npm" | "pnpm" | "yarn" | "bun" | "nub",
 	isWorkspaceRoot: boolean
 ) {
-	const packages = [`wrangler@latest`] satisfies string[];
+	const packages = [getWranglerInstallSpec()] satisfies string[];
 	if (hasDependency("@cloudflare/workers-types")) {
 		packages.push("@cloudflare/workers-types@latest");
 	}

@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { brandColor, dim } from "@cloudflare/cli-shared-helpers/colors";
 import { runCommand } from "@cloudflare/cli-shared-helpers/command";
+import { getWranglerExecSpec } from "@cloudflare/cli-shared-helpers/packages";
 import { processArgument } from "helpers/args";
 import { detectPackageManager } from "helpers/packageManagers";
 import { chooseAccount, login } from "../../src/wrangler/accounts";
@@ -33,7 +34,7 @@ export async function copyExistingWorkerFiles(ctx: C3Context) {
 	await runCommand(
 		[
 			...dlx,
-			"wrangler@latest",
+			getWranglerExecSpec(),
 			"init",
 			"--from-dash",
 			ctx.args.existingScript,

@@ -173,4 +173,21 @@ describe("Package Helpers", () => {
 			expect.anything()
 		);
 	});
+
+	test("installWrangler installs the spec WRANGLER_INSTALL_SPEC sets", async ({
+		expect,
+	}) => {
+		vi.stubEnv("WRANGLER_INSTALL_SPEC", "wrangler@npm:example-cli@1.2.3");
+		const mockPkgJson = { devDependencies: {} };
+		vi.mocked(readFileSync).mockReturnValue(JSON.stringify(mockPkgJson));
+		vi.mocked(parsePackageJSON).mockReturnValue(mockPkgJson);
+
+		await installWrangler("npm", false);
+
+		expect(vi.mocked(runCommand)).toHaveBeenCalledWith(
+			["npm", "install", "--save-dev", "wrangler@npm:example-cli@1.2.3"],
+			expect.anything()
+		);
+		vi.unstubAllEnvs();
+	});
 });
