@@ -1,5 +1,8 @@
 import { stripVTControlCharacters } from "node:util";
-import { getWranglerHideBanner } from "@cloudflare/workers-utils";
+import {
+	getCliNameFromEnv,
+	getWranglerHideBanner,
+} from "@cloudflare/workers-utils";
 import chalk from "chalk";
 import semiver from "semiver";
 import supportsColor from "supports-color";
@@ -30,8 +33,8 @@ export async function printWranglerBanner(
 
 	let text =
 		typeof WRANGLER_PRERELEASE_LABEL === "undefined"
-			? ` ⛅️ wrangler ${wranglerVersion}`
-			: ` ⛅️ wrangler ${wranglerVersion} (${chalk.blue(WRANGLER_PRERELEASE_LABEL)})`;
+			? ` ⛅️ ${getCliNameFromEnv()} ${wranglerVersion}`
+			: ` ⛅️ ${getCliNameFromEnv()} ${wranglerVersion} (${chalk.blue(WRANGLER_PRERELEASE_LABEL)})`;
 	let updateResult: NpmVersionCheckResult | undefined;
 	if (performUpdateCheck) {
 		// Race the update check against a short grace period. On a cache

@@ -76,6 +76,10 @@ type VariableNames =
 	| "WRANGLER_D1_EXTRA_LOCATION_CHOICES"
 	/** The Workers environment to target (equivalent to the `--env` CLI param) */
 	| "CLOUDFLARE_ENV"
+	/** The domain a Worker's own hostname is under. Defaults to `workers.dev`. */
+	| "APSY_CUSTOMER_SUFFIX"
+	/** The name the CLI shows itself by in its banner. Defaults to `wrangler`. */
+	| "WRANGLER_CLI_NAME"
 
 	// ## Directory Configuration
 

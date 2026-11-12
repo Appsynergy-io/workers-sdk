@@ -20,6 +20,19 @@ describe("wrangler banner", () => {
 		`);
 	});
 
+	it("should show the name WRANGLER_CLI_NAME sets, with a rule as long", async ({
+		expect,
+	}) => {
+		vi.stubEnv("WRANGLER_CLI_NAME", "apsy");
+		await runWrangler("--version");
+
+		expect(std.out).toMatchInlineSnapshot(`
+			"
+			 ⛅️ apsy x.x.x
+			──────────────"
+		`);
+	});
+
 	it("should hide the version banner when WRANGLER_HIDE_BANNER is present", async ({
 		expect,
 	}) => {

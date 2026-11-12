@@ -491,3 +491,26 @@ export const getWranglerCacheDirFromEnv = getEnvironmentVariableFactory({
 export const getCloudflaredPathFromEnv = getEnvironmentVariableFactory({
 	variableName: "CLOUDFLARED_PATH",
 });
+
+/**
+ * `APSY_CUSTOMER_SUFFIX` is the domain a Worker's own hostname is under
+ * (`{worker}.{subdomain}.{suffix}`), for a platform that serves Workers under a domain of
+ * its own.
+ *
+ * Defaults to `workers.dev`.
+ */
+export const getCustomerSuffixFromEnv = getEnvironmentVariableFactory({
+	variableName: "APSY_CUSTOMER_SUFFIX",
+	defaultValue: () => "workers.dev",
+});
+
+/**
+ * `WRANGLER_CLI_NAME` is the name the CLI shows itself by in its banner; a distribution's
+ * launcher sets its own.
+ *
+ * Defaults to `wrangler`.
+ */
+export const getCliNameFromEnv = getEnvironmentVariableFactory({
+	variableName: "WRANGLER_CLI_NAME",
+	defaultValue: () => "wrangler",
+});

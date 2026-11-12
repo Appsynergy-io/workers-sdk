@@ -77,6 +77,21 @@ describe("getWorkersDevSubdomain", () => {
 		expect(prompt).not.toHaveBeenCalled();
 	});
 
+	it("puts the subdomain under APSY_CUSTOMER_SUFFIX when it is set", async ({
+		expect,
+	}) => {
+		vi.stubEnv("APSY_CUSTOMER_SUFFIX", "apps.example.net");
+		try {
+			const subdomain = await getWorkersDevSubdomain({}, ACCOUNT_ID, {
+				autoRegisterSubdomain: "My Project!",
+			});
+
+			expect(subdomain).toBe("my-project.apps.example.net");
+		} finally {
+			vi.unstubAllEnvs();
+		}
+	});
+
 	it("only ignores unauthorized lookups when the subdomain is optional", async ({
 		expect,
 	}) => {

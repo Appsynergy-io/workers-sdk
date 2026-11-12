@@ -3,6 +3,7 @@ import {
 	APIError,
 	configFileName,
 	formatTime,
+	getCustomerSuffixFromEnv,
 	getSubdomainMixedStateCheckDisabled,
 	isNonInteractiveOrCI,
 	retryOnAPIFailure,
@@ -516,8 +517,9 @@ export async function triggersDeploy(
 	const targets = completedDeployments
 		.flatMap((deployment) => deployment.targets)
 		.map(
-			// Append protocol only on workers.dev domains
-			(target) => (target.endsWith("workers.dev") ? "https://" : "") + target
+			// Append protocol only on workers.dev domains (or the domain that stands in for it)
+			(target) =>
+				(target.endsWith(getCustomerSuffixFromEnv()) ? "https://" : "") + target
 		);
 	if (targets.length > 0) {
 		logger.log(`Deployed ${workerName} triggers`, formatTime(deployMs));

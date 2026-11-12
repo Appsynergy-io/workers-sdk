@@ -2,6 +2,7 @@ import {
 	APIError,
 	configFileName,
 	getComplianceRegionSubdomain,
+	getCustomerSuffixFromEnv,
 	retryOnAPIFailure,
 	UserError,
 } from "@cloudflare/workers-utils";
@@ -82,7 +83,7 @@ async function getWorkersDevSubdomainInternal(
 			abortSignal
 		);
 		return {
-			subdomain: `${subdomain}${getComplianceRegionSubdomain(complianceConfig)}.workers.dev`,
+			subdomain: `${subdomain}${getComplianceRegionSubdomain(complianceConfig)}.${getCustomerSuffixFromEnv()}`,
 		};
 	} catch (e) {
 		if (e instanceof APIError && e.code === 10000) {
@@ -294,7 +295,7 @@ async function registerSubdomain(
 			(await confirm(
 				`Creating a workers.dev subdomain for your account at ${chalk.blue(
 					chalk.underline(
-						`https://${potentialName}${getComplianceRegionSubdomain(complianceConfig)}.workers.dev`
+						`https://${potentialName}${getComplianceRegionSubdomain(complianceConfig)}.${getCustomerSuffixFromEnv()}`
 					)
 				)}. Ok to proceed?`
 			));
@@ -355,5 +356,5 @@ async function registerSubdomain(
 		)} to edit your workers.dev subdomain`
 	);
 
-	return `${subdomain}${getComplianceRegionSubdomain(complianceConfig)}.workers.dev`;
+	return `${subdomain}${getComplianceRegionSubdomain(complianceConfig)}.${getCustomerSuffixFromEnv()}`;
 }
