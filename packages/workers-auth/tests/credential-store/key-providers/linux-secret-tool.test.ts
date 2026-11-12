@@ -201,6 +201,29 @@ describe("LinuxSecretToolKeyProvider", () => {
 		).toThrow(/Failed to write key via secret-tool/);
 	});
 
+	it("getKey reports backend errors even when lookup exits 1", ({ expect }) => {
+		setLinuxSecretToolRunner(() =>
+			mockResult({ status: 1, stderr: "no dbus" })
+		);
+		expect(() => new LinuxSecretToolKeyProvider("wrangler").getKey()).toThrow(
+			/Failed to read key/
+		);
+	});
+
+	it("deleteKey accepts libsecret's absent-item result", ({ expect }) => {
+		setLinuxSecretToolRunner(() => mockResult({ status: 1 }));
+		expect(() =>
+			new LinuxSecretToolKeyProvider("wrangler").deleteKey()
+		).not.toThrow();
+	});
+
+	it("deleteKey reports failure to spawn secret-tool", ({ expect }) => {
+		setLinuxSecretToolRunner(() => spawnErrorResult());
+		expect(() =>
+			new LinuxSecretToolKeyProvider("wrangler").deleteKey()
+		).toThrow(/Failed to delete key/);
+	});
+
 	it("deleteKey invokes clear", ({ expect }) => {
 		setLinuxSecretToolRunner((args) => {
 			lastInvocation = { args };

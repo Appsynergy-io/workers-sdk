@@ -114,8 +114,9 @@ export class LinuxSecretToolKeyProvider implements KeyProvider {
 			"account",
 			getKeyringAccountName(this.profile),
 		]);
-		// `secret-tool lookup` exits 1 when no matching item is found.
-		if (r.status === 1) {
+		// libsecret exits 1 without stderr for no match; backend errors also exit 1
+		// but print a diagnostic (GNOME/libsecret, tool/secret-tool.c).
+		if (r.status === 1 && r.error === undefined && !r.stderr?.trim()) {
 			return undefined;
 		}
 		if (r.status !== 0) {
@@ -157,9 +158,12 @@ export class LinuxSecretToolKeyProvider implements KeyProvider {
 			"account",
 			getKeyringAccountName(this.profile),
 		]);
-		// `secret-tool clear` is idempotent: exit 0 whether the item existed
-		// or not. Any non-zero exit indicates a real failure (no D-Bus
-		// session, locked keyring, etc.).
+		// secret_tool_action_clear returns 1 without a diagnostic when no item matched.
+		// Keep KeyProvider.deleteKey idempotent; retain actual backend/spawn errors.
+		// https://github.com/GNOME/libsecret/blob/master/tool/secret-tool.c
+		if (r.status === 1 && r.error === undefined && !r.stderr?.trim()) {
+			return;
+		}
 		if (r.status !== 0) {
 			throw new Error(
 				`Failed to delete key via secret-tool (exit ${r.status}): ${r.stderr?.trim() ?? "(no stderr)"}`
