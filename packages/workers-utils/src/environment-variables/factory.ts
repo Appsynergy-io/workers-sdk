@@ -25,6 +25,10 @@ type VariableNames =
 	| "CLOUDFLARE_COMPLIANCE_REGION"
 	/** API token for Basin SQL service. */
 	| "WRANGLER_BASIN_SQL_AUTH_TOKEN"
+	/** The domain R2's S3, SQL and Data Catalog endpoints are served under. Defaults to `cloudflarestorage.com`. */
+	| "APSY_STORAGE_SUFFIX"
+	/** The domain a Quick Tunnel's public URL is under. Defaults to `trycloudflare.com`. */
+	| "WRANGLER_QUICK_TUNNEL_DOMAIN"
 
 	// ## Development & Local Testing
 
@@ -139,6 +143,8 @@ type VariableNames =
 	| "WRANGLER_SEND_ERROR_REPORTS"
 	/** Suppress the prompt that offers to update Cloudflare agent skills. */
 	| "WRANGLER_NO_SKILLS_UPDATE_PROMPTS"
+	/** Never ask the npm registry whether a newer version is available. */
+	| "WRANGLER_DISABLE_UPDATE_CHECK"
 	/** CI branch name (internal use). */
 	| "WORKERS_CI_BRANCH"
 	/** CI tag matching configuration (internal use). */

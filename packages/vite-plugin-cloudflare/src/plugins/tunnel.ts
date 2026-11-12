@@ -68,7 +68,13 @@ function createPublicExposureWarning(
 export const QUICK_TUNNEL_SSE_WARNING =
 	"Quick tunnels do not support Server-Sent Events (SSE). Use a named Cloudflare Tunnel if you need SSE over a public URL.";
 
-export const QUICK_TUNNEL_ALLOWED_HOST = ".trycloudflare.com";
+// `WRANGLER_QUICK_TUNNEL_DOMAIN` is the setting workers-utils' `startTunnel` reads the Quick
+// Tunnel URL by. It is read here directly because this is a module constant, evaluated on
+// import, also where the workers-utils module is replaced by a mock.
+export const QUICK_TUNNEL_ALLOWED_HOST = `.${
+	// eslint-disable-next-line turbo/no-undeclared-env-vars -- read when the plugin runs, not a build input
+	process.env.WRANGLER_QUICK_TUNNEL_DOMAIN || "trycloudflare.com"
+}`;
 
 function normalizeAllowedMail(
 	allowedMail: string[] | undefined

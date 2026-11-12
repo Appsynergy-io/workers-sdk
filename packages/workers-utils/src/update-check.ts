@@ -3,6 +3,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import * as timersPromises from "node:timers/promises";
 import { fetch } from "undici";
+import { getUpdateCheckDisabledFromEnv } from "./environment-variables/misc-variables";
 
 // Safety-net timeout for the update check. The registry request is aborted
 // after this long, and the whole operation (cache I/O included) is raced
@@ -146,6 +147,9 @@ function pickLatestVersion(
 }
 
 async function fetchPackument(name: string): Promise<AbbreviatedPackument> {
+	if (getUpdateCheckDisabledFromEnv()) {
+		throw new Error("WRANGLER_DISABLE_UPDATE_CHECK is set");
+	}
 	const packageUrl = new URL(encodeURIComponent(name), NPM_REGISTRY_URL);
 	const response = await fetch(packageUrl, {
 		headers: {

@@ -1,6 +1,7 @@
 import { join } from "node:path";
 import {
 	getGlobalConfigPath,
+	getQuickTunnelDomainFromEnv,
 	spawnCloudflared,
 	UserError,
 } from "@cloudflare/workers-utils";
@@ -74,7 +75,9 @@ export const tunnelQuickStartCommand = createCommand({
 
 		logger.log(`\nStarting cloudflared...`);
 		logger.log(`   No account required - this is a free, temporary tunnel.`);
-		logger.log(`   You'll get a random *.trycloudflare.com URL to share.`);
+		logger.log(
+			`   You'll get a random *.${getQuickTunnelDomainFromEnv()} URL to share.`
+		);
 		logger.log(`   The tunnel will stop when you press Ctrl+C.\n`);
 
 		// Spawn cloudflared process with automatic binary management

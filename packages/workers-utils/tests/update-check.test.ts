@@ -312,4 +312,19 @@ describe("fetchLatestNpmVersion", () => {
 			latest: "4.14.2",
 		});
 	});
+
+	it("never asks the registry when WRANGLER_DISABLE_UPDATE_CHECK is set", async ({
+		expect,
+	}) => {
+		vi.stubEnv("WRANGLER_DISABLE_UPDATE_CHECK", "true");
+		mockPackument(
+			"wrangler",
+			packument({ latest: "4.14.2" }, { "4.14.1": {}, "4.14.2": {} })
+		);
+
+		await expect(fetchLatestNpmVersion("wrangler", "4.14.1")).resolves.toEqual({
+			status: "failed",
+		});
+		expect(mockAgent.pendingInterceptors()).toHaveLength(1);
+	});
 });

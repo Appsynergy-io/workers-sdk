@@ -100,6 +100,30 @@ describe("startTunnel", () => {
 		});
 	});
 
+	it("should resolve with a public URL under WRANGLER_QUICK_TUNNEL_DOMAIN", async ({
+		expect,
+	}) => {
+		vi.stubEnv("WRANGLER_QUICK_TUNNEL_DOMAIN", "quick.example.net");
+		const proc = createMockProcess();
+		vi.mocked(spawnCloudflared).mockResolvedValue(proc as never);
+
+		const tunnel = startTunnel({
+			origin: new URL("http://localhost:8787"),
+			timeoutMs: TEST_TIMEOUT_MS,
+		});
+		onTestFinished(() => tunnel.dispose());
+
+		await emitStderrNextTick(
+			proc,
+			"INF | https://foo.trycloudflare.com | https://foo-bar.quick.example.net |\n"
+		);
+
+		await expect(tunnel.ready()).resolves.toEqual({
+			mode: "quick",
+			publicUrl: new URL("https://foo-bar.quick.example.net"),
+		});
+	});
+
 	it("should resolve named tunnels after spawning cloudflared", async ({
 		expect,
 	}) => {

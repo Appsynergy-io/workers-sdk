@@ -2,6 +2,7 @@ import { spinner } from "@cloudflare/cli-shared-helpers/interactive";
 import { getCloudflareAPITokenFromEnv } from "@cloudflare/workers-auth";
 import {
 	APIError,
+	getStorageSuffixFromEnv,
 	parseJSON,
 	UserError,
 	truncate,
@@ -140,7 +141,7 @@ export const basinSqlQueryCommand = createCommand({
 
 		const s = spinner();
 		s.start("Query in progress");
-		const apiUrl = `https://api.sql.cloudflarestorage.com/api/v1/accounts/${accountId}/basin-sql/query/${bucketName}`;
+		const apiUrl = `https://api.sql.${getStorageSuffixFromEnv()}/api/v1/accounts/${accountId}/basin-sql/query/${bucketName}`;
 		let responseStatus = null;
 		let statusText = null;
 		let text = null;

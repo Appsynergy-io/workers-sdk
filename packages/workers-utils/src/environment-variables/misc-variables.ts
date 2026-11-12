@@ -76,6 +76,19 @@ export const getNoSkillsUpdatePromptsFromEnv =
 	});
 
 /**
+ * `WRANGLER_DISABLE_UPDATE_CHECK` stops the update check before it asks the npm registry
+ * for the latest version; the check then reports `"failed"`, as when the registry cannot
+ * be reached. For a distribution that ships its own build, npm's latest is not its update.
+ *
+ * Defaults to `false`: the check asks the registry.
+ */
+export const getUpdateCheckDisabledFromEnv =
+	getBooleanEnvironmentVariableFactory({
+		variableName: "WRANGLER_DISABLE_UPDATE_CHECK",
+		defaultValue: false,
+	});
+
+/**
  * `WRANGLER_SEND_ERROR_REPORTS` controls whether we attempt to send error reports to Sentry.
  *
  * Defaults to `false` to avoid noisy false-positive reports. Users can opt in
@@ -164,6 +177,28 @@ const getCloudflareApiBaseUrlFromEnv = getEnvironmentVariableFactory({
 export const getCloudflareApiBaseUrl = (complianceConfig: ComplianceConfig) =>
 	getCloudflareApiBaseUrlFromEnv() ??
 	`https://api${getComplianceRegionSubdomain(complianceConfig)}${getStagingSubdomain()}.cloudflare.com/client/v4`;
+
+/**
+ * `APSY_STORAGE_SUFFIX` is the domain R2's S3, SQL and Data Catalog endpoints are served
+ * under (`{account}.r2.{suffix}`, `api.sql.{suffix}`, `catalog.{suffix}`).
+ *
+ * Defaults to `cloudflarestorage.com`.
+ */
+export const getStorageSuffixFromEnv = getEnvironmentVariableFactory({
+	variableName: "APSY_STORAGE_SUFFIX",
+	defaultValue: () => "cloudflarestorage.com",
+});
+
+/**
+ * `WRANGLER_QUICK_TUNNEL_DOMAIN` is the domain a Quick Tunnel's public URL is under, as the
+ * cloudflared in use reports it.
+ *
+ * Defaults to `trycloudflare.com`.
+ */
+export const getQuickTunnelDomainFromEnv = getEnvironmentVariableFactory({
+	variableName: "WRANGLER_QUICK_TUNNEL_DOMAIN",
+	defaultValue: () => "trycloudflare.com",
+});
 
 /**
  * Compute the subdomain for the compliance region.

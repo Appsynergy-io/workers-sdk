@@ -1,6 +1,7 @@
 import {
 	APIError,
 	getCloudflareApiEnvironmentFromEnv,
+	getStorageSuffixFromEnv,
 	UserError,
 } from "@cloudflare/workers-utils";
 import {
@@ -99,9 +100,9 @@ export const basinCatalogEnableCommand = createCommand({
 		const env = getCloudflareApiEnvironmentFromEnv();
 		const path = response.name.replace("_", "/");
 		if (env === "staging") {
-			catalogHost = `https://catalog-staging.cloudflarestorage.com/${path}`;
+			catalogHost = `https://catalog-staging.${getStorageSuffixFromEnv()}/${path}`;
 		} else {
-			catalogHost = `https://catalog.cloudflarestorage.com/${path}`;
+			catalogHost = `https://catalog.${getStorageSuffixFromEnv()}/${path}`;
 		}
 
 		logger.log(
@@ -188,9 +189,9 @@ export const basinCatalogGetCommand = createCommand({
 			let catalogHost: string;
 			const path = catalog.name.replace("_", "/");
 			if (env === "staging") {
-				catalogHost = `https://catalog-staging.cloudflarestorage.com/${path}`;
+				catalogHost = `https://catalog-staging.${getStorageSuffixFromEnv()}/${path}`;
 			} else {
-				catalogHost = `https://catalog.cloudflarestorage.com/${path}`;
+				catalogHost = `https://catalog.${getStorageSuffixFromEnv()}/${path}`;
 			}
 
 			const output = {

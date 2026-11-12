@@ -8,6 +8,7 @@ import {
 	APIError,
 	FatalError,
 	getCloudflareApiEnvironmentFromEnv,
+	getStorageSuffixFromEnv,
 } from "@cloudflare/workers-utils";
 import { createAlias, createNamespace } from "../core/create-command";
 import { logger } from "../logger";
@@ -140,9 +141,9 @@ export async function authorizeR2Bucket(
 export function getAccountR2Endpoint(accountId: string) {
 	const env = getCloudflareApiEnvironmentFromEnv();
 	if (env === "staging") {
-		return `https://${accountId}.r2-staging.cloudflarestorage.com`;
+		return `https://${accountId}.r2-staging.${getStorageSuffixFromEnv()}`;
 	}
-	return `https://${accountId}.r2.cloudflarestorage.com`;
+	return `https://${accountId}.r2.${getStorageSuffixFromEnv()}`;
 }
 
 // Parse out a transform of the form: <script>[.<entrypoint>]

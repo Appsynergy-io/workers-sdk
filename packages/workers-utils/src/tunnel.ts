@@ -1,5 +1,6 @@
 import { fetchResultBase } from "./cfetch";
 import { spawnCloudflared } from "./cloudflared";
+import { getQuickTunnelDomainFromEnv } from "./environment-variables/misc-variables";
 import { FatalError, UserError } from "./errors";
 import type { ApiCredentials } from "./cfetch";
 import type { ComplianceConfig } from "./environment-variables/misc-variables";
@@ -20,7 +21,13 @@ const DEFAULT_TUNNEL_REMINDER_INTERVAL_MS = 10 * 60 * 1_000;
 /**
  * cloudflared logs the quick tunnel URL to stderr.
  */
-const QUICK_TUNNEL_URL_REGEX = /https:\/\/[a-z0-9-]+\.trycloudflare\.com/;
+function quickTunnelUrlRegex(): RegExp {
+	const domain = getQuickTunnelDomainFromEnv().replace(
+		/[.*+?^${}()|[\]\\]/g,
+		"\\$&"
+	);
+	return new RegExp(`https://[a-z0-9-]+\\.${domain}`);
+}
 
 const LOCAL_TUNNEL_HOSTNAMES = new Set([
 	"localhost",
@@ -499,7 +506,7 @@ function waitForQuickTunnelReady(
 				stderrOutput += chunk;
 				logger?.debug("[cloudflared]", chunk.trimEnd());
 
-				const match = QUICK_TUNNEL_URL_REGEX.exec(stderrOutput);
+				const match = quickTunnelUrlRegex().exec(stderrOutput);
 				if (match && !resolved) {
 					resolved = true;
 					clearTimeout(timeoutId);
